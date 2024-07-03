@@ -192,7 +192,7 @@ const DivisorGraph = () => {
 
   const handleMilestone = ({ type, source, target, ref, event }) => {
     if (event === "end" ) {
-       console.log(`${type}: ${source} -> ${target} -> ${ref}`); 
+      //  console.log(`${type}: ${source} -> ${target} -> ${ref}`); 
       const angle = (Math.PI / 2) - (target / divisor) * 2 * Math.PI;
       const x = (radius + 12) * Math.cos(angle);
       const y = -(radius + 12) * Math.sin(angle);
@@ -228,7 +228,7 @@ const DivisorGraph = () => {
   };
 
   return (
-    <div className="mt-20 flex flex-col items-center space-y-8">
+    <div className="mt-5 flex flex-col items-center space-y-8">
       <svg width={radius * 2 + dotRadius * 2 + 60 } height={radius * 2 + dotRadius * 2 + 60}>
         <defs>
         <marker id="arrowhead" markerWidth="20" markerHeight="14" refX={10 * dotRadius} refY="7" orient="auto">
@@ -300,7 +300,7 @@ const DivisorGraph = () => {
           }}
           className="border border-gray-300 rounded px-2 py-1"
           style={{ width: '250px' }} // Increased width
-        />
+          />
         <span>{curvature}</span>
       </div>
     </div>
