@@ -1,9 +1,9 @@
 import './App.css';
-import CircleWithDots from './CircleWithDots';
+import DivisorGraph from './DivisorGraph';
 
 function App() {
   return (
-    <CircleWithDots />
+    <DivisorGraph />
   );
 }
 

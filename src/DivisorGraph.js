@@ -1,70 +1,9 @@
 import React, { useEffect, useState, useRef } from 'react';
+import { AnimatedCircle } from './AnimatedCircle';
 
 
 
-const AnimatedCircle = ({ data, path, begin = 0, duration = 1000, uniqueKey, onMilestone }) => {
-  const animateMotionRef = useRef(null);
-  const animateRef = useRef(null);
-
-  useEffect(() => {
-    const handleEndEvent = () => {
-      if (onMilestone) onMilestone({...data,...{event: "end"}}, path);
-      
-    };
-
-    const animateMotionElem = animateMotionRef.current;
-    if (animateMotionElem) {
-      animateMotionElem.addEventListener('endEvent', handleEndEvent);
-    }
-
-    const startAnimations = () => {
-      if (animateMotionElem && animateRef.current) {
-        animateMotionElem.beginElement();
-        animateRef.current.beginElement();
-        if (onMilestone)  onMilestone({...data,...{event: "start"}}, path);
-      }
-    };
-
-    const timer = setTimeout(startAnimations, begin);
-
-    // Cleanup function to remove the event listener and clear the timeout
-    return () => {
-      if (animateMotionElem) {
-        animateMotionElem.removeEventListener('endEvent', handleEndEvent);
-      }
-      clearTimeout(timer);
-    };
-  }, [data, path, uniqueKey, begin, onMilestone]);
-
-  return (
-    <g>
-      <circle r="4" fill="black" opacity="0">
-        <animateMotion
-          ref={animateMotionRef}
-          restart="always"
-          key={uniqueKey}
-          repeatCount="1"
-          dur={`${duration}ms`}
-          begin="indefinite" // Set to "indefinite" to control the start manually
-          path={path}
-          fill="remove"
-        />
-        <animate
-          ref={animateRef}
-          restart="always"
-          attributeName="opacity"
-          values="0; 1; 1; 0"
-          keyTimes="0; 0.1; 0.9; 1"
-          dur={`${duration}ms`}
-          begin="indefinite" // Set to "indefinite" to control the start manually
-          fill="freeze"
-        />
-      </circle>
-    </g>
-  );
-};
-
-const CircleWithDots = () => {
+const DivisorGraph = () => {
   const [dividend, setDividend] = useState(98);
   const [divisor, setDivisor] = useState(7);
   const [arcs, setArcs] = useState([]);
@@ -77,6 +16,7 @@ const CircleWithDots = () => {
 
 
   useEffect(() => {
+    cursorRef.current.setAttribute("transform", `translate(${-1000}, ${-1000})`);
     const newArcs = [];
     for (let i = 1; i < divisor; i++) {
       const end = (i * 10) % divisor;
@@ -143,7 +83,8 @@ const CircleWithDots = () => {
           fontFamily="Arial, sans-serif"
         >
           0
-        </text>      </g>
+        </text> 
+      </g>
     );
   };
 
@@ -315,9 +256,6 @@ const CircleWithDots = () => {
           ))}
 
           {generateDots()}
-
-
-
           {generateCursor()} {/* Ensure cursor is rendered */}
         </g>
       </svg>
@@ -329,7 +267,8 @@ const CircleWithDots = () => {
           max="1000"
           value={dividend}
           onChange={(e) => setDividend(Math.max(1, parseInt(e.target.value, 10)))}
-          className="border border-gray-300 rounded px-2 py-1 w-16"
+          className="border border-gray-300 rounded px-2 py-1 w-24" // Increased width
+
         />
 
         <label htmlFor="divisor">/</label>
@@ -340,7 +279,7 @@ const CircleWithDots = () => {
           max="1000"
           value={divisor}
           onChange={(e) => setDivisor(Math.max(1, parseInt(e.target.value, 10)))}
-          className="border border-gray-300 rounded px-2 py-1 w-16"
+          className="border border-gray-300 rounded px-2 py-1 w-24" // Increased width
           />
         <button onClick={createPath} className="bg-blue-500 text-white px-2 py-1 rounded">Calculate Reminder</button>
       </div>
@@ -360,7 +299,7 @@ const CircleWithDots = () => {
             
           }}
           className="border border-gray-300 rounded px-2 py-1"
-          style={{ width: '150px' }}
+          style={{ width: '250px' }} // Increased width
         />
         <span>{curvature}</span>
       </div>
@@ -368,4 +307,4 @@ const CircleWithDots = () => {
   );
 };
 
-export default CircleWithDots;       
+export default DivisorGraph;       
