@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/diophantus/static/css/main.4dfb62a7.css",
+    "main.js": "/diophantus/static/js/main.57913f7c.js",
+    "index.html": "/diophantus/index.html",
+    "main.4dfb62a7.css.map": "/diophantus/static/css/main.4dfb62a7.css.map",
+    "main.57913f7c.js.map": "/diophantus/static/js/main.57913f7c.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.4dfb62a7.css",
+    "static/js/main.57913f7c.js"
+  ]
+}
