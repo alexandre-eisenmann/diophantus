@@ -263,25 +263,22 @@ const DivisorGraph = () => {
         <input
           id="dividend"
           type="number"
-          min="1"
-          max="1000"
           value={dividend}
           onChange={(e) => setDividend(Math.max(1, parseInt(e.target.value, 10)))}
-          className="border border-gray-300 rounded px-2 py-1 w-24" // Increased width
-
+          className="border border-gray-300 rounded px-2 py-1 w-40" // Increased width
         />
 
         <label htmlFor="divisor">/</label>
         <input
           id="divisor"
-          type="number"
+          type="number" 
           min="1"
           max="1000"
           value={divisor}
           onChange={(e) => setDivisor(Math.max(1, parseInt(e.target.value, 10)))}
           className="border border-gray-300 rounded px-2 py-1 w-24" // Increased width
           />
-        <button onClick={createPath} className="bg-blue-500 text-white px-2 py-1 rounded">Calculate Reminder</button>
+        <button onClick={createPath} className="bg-blue-500 text-white px-2 py-1 rounded">Calculate Remainder</button>
       </div>
       {/* Slider for curvature */}
       <div className="flex items-center space-x-2 mt-4">
