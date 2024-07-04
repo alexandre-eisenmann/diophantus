@@ -1,6 +1,6 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "Diophantus",
+  "name": "Diophantus - Divisor Graph",
   "icons": [
     {
       "src": "favicon.ico",
