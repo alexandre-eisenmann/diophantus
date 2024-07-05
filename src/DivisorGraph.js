@@ -10,7 +10,7 @@ const DivisorGraph = () => {
   const [paths, setPaths] = useState([]);
   const [curvature, setCurvature] = useState(2);
   const cursorRef = useRef(null); // Using useRef for cursor position
-  const radius = 200;
+  const radius = 160;
   const dotRadius = 4;
   const tick = 200;
 
@@ -259,46 +259,52 @@ const DivisorGraph = () => {
           {generateCursor()} {/* Ensure cursor is rendered */}
         </g>
       </svg>
-      <div className="flex items-center space-x-2">
-        <input
-          id="dividend"
-          type="number"
-          value={dividend}
-          onChange={(e) => setDividend(Math.max(1, parseInt(e.target.value, 10)))}
-          className="border border-gray-300 rounded px-2 py-1 w-40" // Increased width
-        />
-
-        <label htmlFor="divisor">/</label>
-        <input
-          id="divisor"
-          type="number" 
-          min="1"
-          max="1000"
-          value={divisor}
-          onChange={(e) => setDivisor(Math.max(1, parseInt(e.target.value, 10)))}
-          className="border border-gray-300 rounded px-2 py-1 w-24" // Increased width
+      <div className="mt-4">
+        <div className="flex items-center space-x-2 mb-2">
+          <input
+            id="dividend"
+            type="number"
+            value={dividend}
+            onChange={(e) => setDividend(Math.max(1, parseInt(e.target.value, 10)))}
+            className="border border-gray-300 rounded px-2 py-1 w-40" // Increased width
           />
-        <button onClick={createPath} className="bg-blue-500 text-white px-2 py-1 rounded">Calculate Remainder</button>
+          <label htmlFor="divisor">/</label>
+          <input
+            id="divisor"
+            type="number"
+            min="1"
+            max="1000"
+            value={divisor}
+            onChange={(e) => setDivisor(Math.max(1, parseInt(e.target.value, 10)))}
+            className="border border-gray-300 rounded px-2 py-1 w-24" // Increased width
+          />
+        </div>
+        <div className="flex justify-center">
+          <button onClick={createPath} className="bg-blue-500 text-white px-2 py-1 rounded">Calculate Remainder</button>
+        </div>
       </div>
+
+      
       {/* Slider for curvature */}
-      <div className="flex items-center space-x-2 mt-4">
-        <label htmlFor="curvature">Curvature:</label>
-        <input
-          id="curvature"
-          type="range"
-          min="0.6"
-          max="3"
-          step="0.01" // Step increment of 0.1 for more granularity
-          value={curvature}
-          onChange={(e) => {
-            setCurvature(parseFloat(e.target.value))
-            setPaths([]);
-            
-          }}
-          className="border border-gray-300 rounded px-2 py-1"
-          style={{ width: '250px' }} // Increased width
+      <div className="mt-4">
+        <label htmlFor="curvature" className="block mb-1">Curvature:</label>
+        <div className="flex items-center space-x-2">
+          <input
+            id="curvature"
+            type="range"
+            min="0.6"
+            max="3"
+            step="0.01" // Step increment of 0.1 for more granularity
+            value={curvature}
+            onChange={(e) => {
+              setCurvature(parseFloat(e.target.value));
+              setPaths([]);
+            }}
+            className="border border-gray-300 rounded px-2 py-1"
+            style={{ width: '250px' }} // Increased width
           />
-        <span>{curvature}</span>
+          <span>{curvature}</span>
+        </div>
       </div>
     </div>
   );
