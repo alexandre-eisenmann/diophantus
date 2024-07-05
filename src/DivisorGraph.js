@@ -230,7 +230,7 @@ const DivisorGraph = () => {
   };
 
   return (
-    <div className="mt-5 flex flex-col items-center space-y-8">
+    <div className="mt-2 flex flex-col items-center ">
       <svg width={radius * 2 + dotRadius * 2 + 60 } height={radius * 2 + dotRadius * 2 + 60}>
         <defs>
         <marker id="arrowhead" markerWidth="20" markerHeight="14" refX={10 * dotRadius} refY="7" orient="auto">
@@ -261,6 +261,44 @@ const DivisorGraph = () => {
           {generateCursor()} {/* Ensure cursor is rendered */}
         </g>
       </svg>
+
+      <div className="mt-0">
+        <div>
+          <StableSliderComponent 
+            id = {"curv"}
+            label={"Curvature"}
+            value={curvature} 
+            min="0.6"
+            max="3"
+            step="0.01"
+            handleChange={(e) => {
+              setCurvature(parseFloat(e.target.value));
+              setPaths([]);
+            }}
+          />
+        </div>
+      </div>
+
+      <div className="mt-4">
+        <div>
+          <StableSliderComponent 
+            id = {"div"}
+            label={"Divisor"}
+            value={divisor } 
+            min="1"
+            max="999"
+            step="1"
+            handleChange={(e) => { 
+              if (e.target.value ) {
+                console.log("xxxx",e.target.value,  Math.max(1, parseInt(e.target.value, 10)))
+                setDivisor( Math.max(1, parseFloat(e.target.value, 10)))
+              }
+            }}
+          />
+        </div>
+      </div>
+
+            
       <div className="mt-4">
         <div className="flex items-center space-x-2 mb-2">
           <input
@@ -281,24 +319,27 @@ const DivisorGraph = () => {
             className="border border-gray-300 rounded px-2 py-1 w-24" // Increased width
           />
         </div>
-        <div className="flex justify-center">
-          <button onClick={createPath} className="bg-gray-700 text-white px-2 py-1 rounded">Get Remainder</button>
-        </div>
+      </div>
+      <div className="flex justify-center mt-4">
+          <button onClick={createPath} className="bg-gray-700 text-white px-2 py-1 rounded">Calculate Remainder</button>
       </div>
 
+
+      {/* <div className="mt-4">
+        <div>
+          <StableSliderComponent 
+            label={"Divisor"}
+            value={divisor} 
+            min="1"
+            max="999"
+            step="1"
+            handleChange={(e) => setDivisor(Math.max(1, parseInt(e.target.value, 10)))}
+          />
+        </div>
+      </div> */}
+
       
-      {/* Slider for curvature */}
-      <div className="mt-4">
-      <div>
-        <StableSliderComponent 
-          curvature={curvature} 
-          handleCurvatureChange={(e) => {
-            setCurvature(parseFloat(e.target.value));
-            setPaths([]);
-          }}
-        />
-      </div>
-      </div>
+
     </div>
   );
 };
