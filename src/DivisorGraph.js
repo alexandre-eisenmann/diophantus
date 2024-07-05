@@ -282,17 +282,14 @@ const DivisorGraph = () => {
       <div className="mt-4">
         <div>
           <StableSliderComponent 
-            id = {"div"}
+            id = {"divis"}
             label={"Divisor"}
             value={divisor } 
             min="1"
             max="999"
             step="1"
             handleChange={(e) => { 
-              if (e.target.value ) {
-                console.log("xxxx",e.target.value,  Math.max(1, parseInt(e.target.value, 10)))
                 setDivisor( Math.max(1, parseFloat(e.target.value, 10)))
-              }
             }}
           />
         </div>

@@ -7,31 +7,48 @@ const StableSliderComponent = ({ id, value, label, min, max, step, handleChange 
     const slider = sliderRef.current;
     if (!slider) return;
     
-    const preventDrag = (e) => {
+    const handleUpdate = (e) => {
       e.preventDefault();
-    };
-
-    const handleTouchMove = (e) => {
-      e.preventDefault();
-      const touch = e.touches[0];
-      const slider = e.target;
+      const clientX = e.type.includes('touch') ? e.touches[0].clientX : e.clientX;
       const rect = slider.getBoundingClientRect();
-      const x = touch.clientX - rect.left;
+      const x = clientX - rect.left;
       const percent = Math.max(0, Math.min(1, x / rect.width));
-      const min = parseFloat(slider.min);
-      const max = parseFloat(slider.max);
-      const val = percent * (max - min) + min;
-      handleChange({ target: { val } });
+      const minValue = parseFloat(min);
+      const maxValue = parseFloat(max);
+      const newValue = percent * (maxValue - minValue) + minValue;
+      handleChange({ target: { value: newValue } });
     };
 
-    slider.addEventListener('touchmove', handleTouchMove, { passive: false });
-    slider.addEventListener('touchstart', preventDrag, { passive: false });
+    const handleTouchStart = (e) => {
+      document.addEventListener('touchmove', handleUpdate, { passive: false });
+      document.addEventListener('touchend', handleTouchEnd, { passive: false });
+    };
+
+    const handleTouchEnd = () => {
+      document.removeEventListener('touchmove', handleUpdate);
+      document.removeEventListener('touchend', handleTouchEnd);
+    };
+
+    slider.addEventListener('touchstart', handleTouchStart, { passive: false });
+    slider.addEventListener('mousedown', (e) => {
+      handleUpdate(e);
+      document.addEventListener('mousemove', handleUpdate);
+      document.addEventListener('mouseup', handleMouseUp);
+    });
+
+    const handleMouseUp = () => {
+      document.removeEventListener('mousemove', handleUpdate);
+      document.removeEventListener('mouseup', handleMouseUp);
+    };
 
     return () => {
-      slider.removeEventListener('touchmove', handleTouchMove);
-      slider.removeEventListener('touchstart', preventDrag);
+      slider.removeEventListener('touchstart', handleTouchStart);
+      document.removeEventListener('touchmove', handleUpdate);
+      document.removeEventListener('touchend', handleTouchEnd);
+      document.removeEventListener('mousemove', handleUpdate);
+      document.removeEventListener('mouseup', handleMouseUp);
     };
-  }, [handleChange]);
+  }, [handleChange, min, max]);
 
   return (
     <div className="flex justify-center touch-none">
@@ -47,7 +64,7 @@ const StableSliderComponent = ({ id, value, label, min, max, step, handleChange 
             step={step}
             value={value}
             onChange={handleChange}
-            className="slider w-[280px] touch-none"
+            className="slider w-[230px] touch-none"
           />
           <span className="w-12 text-right">{Number(value)}</span>
         </div>
@@ -56,4 +73,4 @@ const StableSliderComponent = ({ id, value, label, min, max, step, handleChange 
   );
 };
 
-export default StableSliderComponent
+export default StableSliderComponent;
