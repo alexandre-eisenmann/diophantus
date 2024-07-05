@@ -66,7 +66,7 @@ const StableSliderComponent = ({ id, value, label, min, max, step, handleChange 
             onChange={handleChange}
             className="slider w-[230px] touch-none"
           />
-          <span className="w-12 text-right">{Number(value)}</span>
+          <span className="w-12 text-right">{Number(value).toFixed(2)}</span>
         </div>
       </div>
     </div>

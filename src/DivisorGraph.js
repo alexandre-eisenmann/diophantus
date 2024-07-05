@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { AnimatedCircle } from './AnimatedCircle';
-import StableSliderComponent from './StableSliderComponent';
+// import StableSliderComponent from './StableSliderComponent';
 
 
 
@@ -262,7 +262,28 @@ const DivisorGraph = () => {
         </g>
       </svg>
 
-      <div className="mt-0">
+      <div className="mt-4">
+        <label htmlFor="curvature" className="block mb-1">Curvature:</label>
+        <div className="flex items-center space-x-2">
+          <input
+            id="curvature"
+            type="range"
+            min="0.6"
+            max="3"
+            step="0.01" // Step increment of 0.1 for more granularity
+            value={curvature}
+            onChange={(e) => {
+              setCurvature(parseFloat(e.target.value));
+              setPaths([]);
+            }}
+            className="border border-gray-300 rounded px-2 py-1"
+            style={{ width: '250px' }} // Increased width
+          />
+          <span>{curvature}</span>
+        </div>
+      </div>
+
+      {/* <div className="mt-0">
         <div>
           <StableSliderComponent 
             id = {"curv"}
@@ -277,9 +298,9 @@ const DivisorGraph = () => {
             }}
           />
         </div>
-      </div>
+      </div> */}
 
-      <div className="mt-4">
+      {/* <div className="mt-4">
         <div>
           <StableSliderComponent 
             id = {"divis"}
@@ -293,7 +314,7 @@ const DivisorGraph = () => {
             }}
           />
         </div>
-      </div>
+      </div> */}
 
             
       <div className="mt-4">
@@ -318,7 +339,7 @@ const DivisorGraph = () => {
         </div>
       </div>
       <div className="flex justify-center mt-4">
-          <button onClick={createPath} className="bg-gray-700 text-white px-2 py-1 rounded">Calculate Remainder</button>
+          <button onClick={createPath} className="bg-blue-500 text-white px-2 py-1 rounded">Calculate Remainder</button>
       </div>
 
 
