@@ -271,7 +271,7 @@ const DivisorGraph = () => {
         </g>
       </svg>
 
-      <div >
+      <div className="mt-[-20px]">
         <div>
           <StableSliderComponent 
             id = {"curv"}
@@ -307,11 +307,6 @@ const DivisorGraph = () => {
           />
         </div>
       </div>
-
-      <div className = "mt-2">
-        <div>{dividend} mod {divisor} = <span id="mod"></span></div>
-      </div>
-          
       <div className="mt-2 flex items-center space-x-2">
       <input
         id="dividend"
@@ -332,6 +327,10 @@ const DivisorGraph = () => {
       />
       <button onClick={createPath} className="bg-black text-white px-2 py-1 rounded">Go</button>
     </div>
+      <div className = "mt-2">
+        <div>{dividend} mod {divisor} = <span id="mod"></span></div>
+      </div>
+
 
 
     </div>

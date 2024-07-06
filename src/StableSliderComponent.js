@@ -86,7 +86,7 @@ const StableSliderComponent = ({ id, initialValue, label, min, max, step, onChan
   return (
     <div className="flex justify-center touch-none">
       <div className="w-[280px]">
-        <label htmlFor={id} className="block mb-2">{label}</label>
+        <label htmlFor={id} className="block mb-1">{label}</label>
         <div className="flex items-center space-x-2">
           <input
             ref={sliderRef}
