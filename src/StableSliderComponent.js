@@ -1,54 +1,87 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState, useCallback } from 'react';
 
-const StableSliderComponent = ({ id, value, label, min, max, step, handleChange }) => {
+const StableSliderComponent = ({ id, initialValue, label, min, max, step, onChange }) => {
+  const [value, setValue] = useState(() => {
+    const parsed = parseFloat(initialValue);
+    return isNaN(parsed) ? parseFloat(min) : parsed;
+  });
   const sliderRef = useRef(null);
+  const isDraggingRef = useRef(false);
+
+  const minValue = parseFloat(min);
+  const maxValue = parseFloat(max);
+  const stepValue = parseFloat(step);
+
+  const formatValue = useCallback((val) => {
+    const stepDecimals = step.toString().split('.')[1]?.length || 0;
+    return Number(val).toFixed(stepDecimals);
+  }, [step]);
+
+  const clamp = useCallback((num, min, max) => Math.min(Math.max(num, min), max), []);
+
+  const sanitizeValue = useCallback((val) => {
+    const parsed = parseFloat(val);
+    if (isNaN(parsed)) return minValue;
+    return clamp(parsed, minValue, maxValue);
+  }, [clamp, minValue, maxValue]);
 
   useEffect(() => {
     const slider = sliderRef.current;
     if (!slider) return;
-    
-    const handleUpdate = (e) => {
+
+    const getValueFromMousePosition = (clientX) => {
+      const rect = slider.getBoundingClientRect();
+      const percent = clamp((clientX - rect.left) / rect.width, 0, 1);
+      const rawValue = percent * (maxValue - minValue) + minValue;
+      return sanitizeValue(rawValue);
+    };
+
+    const updateValue = (clientX) => {
+      const newValue = getValueFromMousePosition(clientX);
+      setValue(newValue);
+      onChange({ target: { value: newValue.toString() } });
+    };
+
+    const handleMove = (e) => {
+      if (!isDraggingRef.current) return;
       e.preventDefault();
       const clientX = e.type.includes('touch') ? e.touches[0].clientX : e.clientX;
-      const rect = slider.getBoundingClientRect();
-      const x = clientX - rect.left;
-      const percent = Math.max(0, Math.min(1, x / rect.width));
-      const minValue = parseFloat(min);
-      const maxValue = parseFloat(max);
-      const newValue = percent * (maxValue - minValue) + minValue;
-      handleChange({ target: { value: newValue } });
+      updateValue(clientX);
     };
 
-    const handleTouchStart = (e) => {
-      document.addEventListener('touchmove', handleUpdate, { passive: false });
-      document.addEventListener('touchend', handleTouchEnd, { passive: false });
+    const handleStart = (e) => {
+      isDraggingRef.current = true;
+      handleMove(e);
     };
 
-    const handleTouchEnd = () => {
-      document.removeEventListener('touchmove', handleUpdate);
-      document.removeEventListener('touchend', handleTouchEnd);
+    const handleEnd = () => {
+      isDraggingRef.current = false;
     };
 
-    slider.addEventListener('touchstart', handleTouchStart, { passive: false });
-    slider.addEventListener('mousedown', (e) => {
-      handleUpdate(e);
-      document.addEventListener('mousemove', handleUpdate);
-      document.addEventListener('mouseup', handleMouseUp);
-    });
+    slider.addEventListener('mousedown', handleStart);
+    slider.addEventListener('touchstart', handleStart, { passive: false });
 
-    const handleMouseUp = () => {
-      document.removeEventListener('mousemove', handleUpdate);
-      document.removeEventListener('mouseup', handleMouseUp);
-    };
+    document.addEventListener('mousemove', handleMove);
+    document.addEventListener('touchmove', handleMove, { passive: false });
+
+    document.addEventListener('mouseup', handleEnd);
+    document.addEventListener('touchend', handleEnd);
 
     return () => {
-      slider.removeEventListener('touchstart', handleTouchStart);
-      document.removeEventListener('touchmove', handleUpdate);
-      document.removeEventListener('touchend', handleTouchEnd);
-      document.removeEventListener('mousemove', handleUpdate);
-      document.removeEventListener('mouseup', handleMouseUp);
+      slider.removeEventListener('mousedown', handleStart);
+      slider.removeEventListener('touchstart', handleStart);
+      document.removeEventListener('mousemove', handleMove);
+      document.removeEventListener('touchmove', handleMove);
+      document.removeEventListener('mouseup', handleEnd);
+      document.removeEventListener('touchend', handleEnd);
     };
-  }, [handleChange, min, max]);
+  }, [minValue, maxValue, stepValue, onChange, clamp, sanitizeValue]);
+
+  const handleInputChange = (e) => {
+    const newValue = sanitizeValue(e.target.value);
+    setValue(newValue);
+    onChange({ target: { value: newValue.toString() } });
+  };
 
   return (
     <div className="flex justify-center touch-none">
@@ -59,14 +92,14 @@ const StableSliderComponent = ({ id, value, label, min, max, step, handleChange 
             ref={sliderRef}
             id={id}
             type="range"
-            min={min}
-            max={max}
-            step={step}
+            min={minValue}
+            max={maxValue}
+            step={stepValue}
             value={value}
-            onChange={handleChange}
+            onChange={handleInputChange}
             className="slider w-[230px] touch-none"
           />
-          <span className="w-12 text-right">{Number(value).toFixed(2)}</span>
+          <span className="w-12 text-right">{formatValue(value)}</span>
         </div>
       </div>
     </div>

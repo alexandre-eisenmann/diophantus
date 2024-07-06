@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { AnimatedCircle } from './AnimatedCircle';
-// import StableSliderComponent from './StableSliderComponent';
+import StableSliderComponent from './StableSliderComponent';
+import { throttle } from 'lodash';
 
 
 
@@ -16,9 +17,12 @@ const DivisorGraph = () => {
   const dotRadius = 4;
   const tick = 200;
 
+  useEffect(() => {
+    updateCursor()
+  }, [paths, divisor, dividend]);
+
 
   useEffect(() => {
-    cursorRef.current.setAttribute("transform", `translate(${-1000}, ${-1000})`);
     const newArcs = [];
     for (let i = 1; i < divisor; i++) {
       const end = (i * 10) % divisor;
@@ -29,7 +33,6 @@ const DivisorGraph = () => {
   }, [divisor, dividend]);
 
   const createPath = () => {
-    cursorRef.current.setAttribute("transform", `translate(${-1000}, ${-1000})`);
     const newPaths = [];
     let start = 0;
     const numberString = dividend.toString();
@@ -192,22 +195,27 @@ const DivisorGraph = () => {
     return `M ${startX} ${startY} A ${gRadius} ${gRadius} 0 0 ${sweepFlag} ${endX} ${endY}`;
   };
 
+  const updateCursor = (x = -1000, y = -1000, value = "") => {
+    if (cursorRef.current) {
+      cursorRef.current.setAttribute("transform", `translate(${x}, ${y})`);
+
+      ['cursor-text', 'mod'].forEach((id) => {
+        const textElement = document.getElementById(id);
+        if (textElement) {
+          textElement.textContent = value.toString();
+        }
+
+      })
+    }
+  }
+
   const handleMilestone = ({ type, source, target, ref, event }) => {
     if (event === "end" ) {
       //  console.log(`${type}: ${source} -> ${target} -> ${ref}`); 
       const angle = (Math.PI / 2) - (target / divisor) * 2 * Math.PI;
       const x = (radius + 12) * Math.cos(angle);
       const y = -(radius + 12) * Math.sin(angle);
-      
-
-      if (cursorRef.current) {
-        cursorRef.current.setAttribute("transform", `translate(${x}, ${y})`);
-        // Use getElementById to find the text element
-        const textElement = document.getElementById('cursor-text');
-        if (textElement) {
-          textElement.textContent = target.toString();
-        }
-      }
+      updateCursor(x, y, target)
     }      
   };
 
@@ -230,8 +238,9 @@ const DivisorGraph = () => {
   };
 
   return (
-    <div className="mt-2 flex flex-col items-center ">
-      <svg width={radius * 2 + dotRadius * 2 + 60 } height={radius * 2 + dotRadius * 2 + 60}>
+    <div className="mt-1 flex flex-col items-center ">
+
+      <svg className="mt-[-10px] "  width={radius * 2 + dotRadius * 2 + 60 } height={radius * 2 + dotRadius * 2 + 60}>
         <defs>
         <marker id="arrowhead" markerWidth="20" markerHeight="14" refX={10 * dotRadius} refY="7" orient="auto">
             <polygon points="0,0 20,7 0,14" fill="#999" />
@@ -262,101 +271,68 @@ const DivisorGraph = () => {
         </g>
       </svg>
 
-      <div className="mt-4">
-        <label htmlFor="curvature" className="block mb-1">Curvature:</label>
-        <div className="flex items-center space-x-2">
-          <input
-            id="curvature"
-            type="range"
-            min="0.6"
-            max="3"
-            step="0.01" // Step increment of 0.1 for more granularity
-            value={curvature}
-            onChange={(e) => {
-              setCurvature(parseFloat(e.target.value));
-              setPaths([]);
-            }}
-            className="border border-gray-300 rounded px-2 py-1"
-            style={{ width: '250px' }} // Increased width
-          />
-          <span>{curvature}</span>
-        </div>
-      </div>
-
-      {/* <div className="mt-0">
+      <div >
         <div>
           <StableSliderComponent 
             id = {"curv"}
             label={"Curvature"}
-            value={curvature} 
+            initialValue={curvature} 
             min="0.6"
             max="3"
             step="0.01"
-            handleChange={(e) => {
-              setCurvature(parseFloat(e.target.value));
-              setPaths([]);
+            onChange={(e) => {
+              throttle(() => {
+                setCurvature(parseFloat(e.target.value).toFixed(2));
+                setPaths([]);
+              }, 10)();
             }}
           />
         </div>
-      </div> */}
+      </div>
 
-      {/* <div className="mt-4">
+      <div className="mt-2">
         <div>
           <StableSliderComponent 
             id = {"divis"}
             label={"Divisor"}
-            value={divisor } 
+            initialValue={divisor } 
             min="1"
             max="999"
             step="1"
-            handleChange={(e) => { 
-                setDivisor( Math.max(1, parseFloat(e.target.value, 10)))
+            onChange={(e) => {
+              throttle(() => {
+                setDivisor(Math.max(1, parseInt(e.target.value, 10)));
+              }, 50)(); 
             }}
           />
         </div>
-      </div> */}
-
-            
-      <div className="mt-4">
-        <div className="flex items-center space-x-2 mb-2">
-          <input
-            id="dividend"
-            type="number"
-            value={dividend}
-            onChange={(e) => setDividend(Math.max(1, parseInt(e.target.value, 10)))}
-            className="border border-gray-300 rounded px-2 py-1 w-40" // Increased width
-          />
-          <label htmlFor="divisor">/</label>
-          <input
-            id="divisor"
-            type="number"
-            min="1"
-            max="1000"
-            value={divisor}
-            onChange={(e) => setDivisor(Math.max(1, parseInt(e.target.value, 10)))}
-            className="border border-gray-300 rounded px-2 py-1 w-24" // Increased width
-          />
-        </div>
-      </div>
-      <div className="flex justify-center mt-4">
-          <button onClick={createPath} className="bg-blue-500 text-white px-2 py-1 rounded">Calculate Remainder</button>
       </div>
 
+      <div className = "mt-2">
+        <div>{dividend} mod {divisor} = <span id="mod"></span></div>
+      </div>
+          
+      <div className="mt-2 flex items-center space-x-2">
+      <input
+        id="dividend"
+        type="number"
+        value={dividend}
+        onChange={(e) => setDividend(Math.max(1, parseInt(e.target.value, 10)))}
+        className="border border-gray-300 rounded px-2 py-1 w-24" // Adjust width as needed
+      />
+      <label htmlFor="divisor">/</label>
+      <input
+        id="divisor"
+        type="number"
+        min="1"
+        max="1000"
+        value={divisor}
+        onChange={(e) => setDivisor(Math.max(1, parseInt(e.target.value, 10)))}
+        className="border border-gray-300 rounded px-2 py-1 w-24" // Adjust width as needed
+      />
+      <button onClick={createPath} className="bg-black text-white px-2 py-1 rounded">Go</button>
+    </div>
 
-      {/* <div className="mt-4">
-        <div>
-          <StableSliderComponent 
-            label={"Divisor"}
-            value={divisor} 
-            min="1"
-            max="999"
-            step="1"
-            handleChange={(e) => setDivisor(Math.max(1, parseInt(e.target.value, 10)))}
-          />
-        </div>
-      </div> */}
-
-      
 
     </div>
   );
