@@ -6,20 +6,45 @@ import { throttle } from 'lodash';
 
 
 
+function getCurrentTimestamp() {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const day = String(now.getDate()).padStart(2, '0');
+  const hour = String(now.getHours()).padStart(2, '0');
+  const minutes = String(now.getMinutes()).padStart(2, '0');
+
+  return parseInt(`${minutes}${hour}${day}${month}${year}`, 10);
+}
+
 const DivisorGraph = () => {
-  const [dividend, setDividend] = useState(98);
-  const [divisor, setDivisor] = useState(7);
+  const [dividend, setDividend] = useState(getCurrentTimestamp());
+  const [divisor, setDivisor] = useState(Math.floor(Math.random() * 60) + 1);
   const [arcs, setArcs] = useState([]);
   const [paths, setPaths] = useState([]);
   const [curvature, setCurvature] = useState(2);
+  const [tick, setTick] = useState(200)
+  const [speed, setSpeed] = useState(80)
   const cursorRef = useRef(null); // Using useRef for cursor position
-  const radius = 160;
+  // const radius = 160;
+  const radius = 140;
   const dotRadius = 4;
-  const tick = 200;
 
   useEffect(() => {
     updateCursor()
   }, [paths, divisor, dividend]);
+
+
+
+  useEffect(() => {
+    const t = (100 - speed)/100*1000 + 1
+    setTick(t)
+  }, [speed]);
+
+
+  useEffect(() => {
+    setPaths([])
+  }, [divisor, dividend, tick, curvature]);
 
 
   useEffect(() => {
@@ -30,9 +55,10 @@ const DivisorGraph = () => {
     }
     setArcs(newArcs);
     setPaths([]);
-  }, [divisor, dividend]);
+  }, [divisor]);
 
-  const createPath = () => {
+
+  const startAnimation = () => {
     const newPaths = [];
     let start = 0;
     const numberString = dividend.toString();
@@ -78,7 +104,7 @@ const DivisorGraph = () => {
   const generateCursor = () => {
     return (
       <g ref={cursorRef} key={"cursor"} transform={`translate(-1000, -1000)`}>
-        <circle r={8} fill="none" stroke="black" strokeWidth="0.5" />
+        <circle r={8} fill="white" stroke="black" strokeWidth="0.5" />
         <text
           id={'cursor-text'}
           textAnchor="middle"
@@ -239,8 +265,11 @@ const DivisorGraph = () => {
 
   return (
     <div className="mt-1 flex flex-col items-center ">
+      <div className = "font-roboto-condensed font-bold text-2xl">
+        <div>{dividend} mod {divisor} = <span id="mod"></span></div>
+      </div>
 
-      <svg className="mt-[-10px] "  width={radius * 2 + dotRadius * 2 + 60 } height={radius * 2 + dotRadius * 2 + 60}>
+      <svg className="mt-[-15px]"  width={radius * 2 + dotRadius * 2 + 60 } height={radius * 2 + dotRadius * 2 + 60}>
         <defs>
         <marker id="arrowhead" markerWidth="20" markerHeight="14" refX={10 * dotRadius} refY="7" orient="auto">
             <polygon points="0,0 20,7 0,14" fill="#999" />
@@ -264,6 +293,7 @@ const DivisorGraph = () => {
               data={data}
               onMilestone={handleMilestone}
             />
+            
           ))}
 
           {generateDots()}
@@ -271,7 +301,48 @@ const DivisorGraph = () => {
         </g>
       </svg>
 
-      <div className="mt-[-20px]">
+      <div className="mt-[-10px] flex  items-center space-x-2">
+      <input
+        id="dividend"
+        type="number"
+        value={dividend}
+        onChange={(e) => setDividend(Math.max(1, parseInt(e.target.value, 10)))}
+        className="border border-gray-300 rounded px-2 py-1 w-[150px] text-sm" // Adjust width as needed
+      />
+      <label htmlFor="divisor">/</label>
+      <input
+        id="divisor"
+        type="number"
+        min="1"
+        max="1000"
+        value={divisor}
+        onChange={(e) => setDivisor(Math.max(1, parseInt(e.target.value, 10)))}
+        className="border border-gray-300 rounded px-2 py-1 w-[80px] text-sm" // Adjust width as needed
+      />
+      <button onClick={startAnimation} className="bg-black text-white px-2 py-1 rounded">Go</button>
+      </div>
+
+
+    <div className="mt-2">
+        <div>
+          <StableSliderComponent 
+            id = {"divis"}
+            label={"Divisor"}
+            initialValue={divisor } 
+            min="1"
+            max="120"
+            step="1"
+            onChange={(e) => {
+              throttle(() => {
+                setDivisor(Math.max(1, parseInt(e.target.value, 10)));
+              }, 50)(); 
+            }}
+          />
+        </div>
+      </div>
+
+
+      <div className="mt-1">
         <div>
           <StableSliderComponent 
             id = {"curv"}
@@ -283,55 +354,30 @@ const DivisorGraph = () => {
             onChange={(e) => {
               throttle(() => {
                 setCurvature(parseFloat(e.target.value).toFixed(2));
-                setPaths([]);
               }, 10)();
             }}
           />
         </div>
       </div>
 
-      <div className="mt-2">
+
+      <div className="mt-1">
         <div>
           <StableSliderComponent 
-            id = {"divis"}
-            label={"Divisor"}
-            initialValue={divisor } 
+            id = {"speed"}
+            label={"Speed"}
+            initialValue={speed} 
             min="1"
-            max="999"
+            max="99s"
             step="1"
             onChange={(e) => {
               throttle(() => {
-                setDivisor(Math.max(1, parseInt(e.target.value, 10)));
-              }, 50)(); 
+                setSpeed(parseInt(e.target.value));
+              }, 10)();
             }}
           />
         </div>
       </div>
-      <div className="mt-2 flex items-center space-x-2">
-      <input
-        id="dividend"
-        type="number"
-        value={dividend}
-        onChange={(e) => setDividend(Math.max(1, parseInt(e.target.value, 10)))}
-        className="border border-gray-300 rounded px-2 py-1 w-24" // Adjust width as needed
-      />
-      <label htmlFor="divisor">/</label>
-      <input
-        id="divisor"
-        type="number"
-        min="1"
-        max="1000"
-        value={divisor}
-        onChange={(e) => setDivisor(Math.max(1, parseInt(e.target.value, 10)))}
-        className="border border-gray-300 rounded px-2 py-1 w-24" // Adjust width as needed
-      />
-      <button onClick={createPath} className="bg-black text-white px-2 py-1 rounded">Go</button>
-    </div>
-      <div className = "mt-2">
-        <div>{dividend} mod {divisor} = <span id="mod"></span></div>
-      </div>
-
-
 
     </div>
   );
