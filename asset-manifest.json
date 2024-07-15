@@ -1,13 +1,13 @@
 {
   "files": {
-    "main.css": "/diophantus/static/css/main.0a87c069.css",
-    "main.js": "/diophantus/static/js/main.8039014f.js",
+    "main.css": "/diophantus/static/css/main.54c6532f.css",
+    "main.js": "/diophantus/static/js/main.15b14d8b.js",
     "index.html": "/diophantus/index.html",
-    "main.0a87c069.css.map": "/diophantus/static/css/main.0a87c069.css.map",
-    "main.8039014f.js.map": "/diophantus/static/js/main.8039014f.js.map"
+    "main.54c6532f.css.map": "/diophantus/static/css/main.54c6532f.css.map",
+    "main.15b14d8b.js.map": "/diophantus/static/js/main.15b14d8b.js.map"
   },
   "entrypoints": [
-    "static/css/main.0a87c069.css",
-    "static/js/main.8039014f.js"
+    "static/css/main.54c6532f.css",
+    "static/js/main.15b14d8b.js"
   ]
 }
