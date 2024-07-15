@@ -301,27 +301,56 @@ const DivisorGraph = () => {
         </g>
       </svg>
 
-      <div className="mt-[-10px] flex  items-center space-x-2">
-      <input
-        id="dividend"
-        type="number"
-        value={dividend}
-        onChange={(e) => setDividend(Math.max(1, parseInt(e.target.value, 10)))}
-        className="border border-gray-300 rounded px-2 py-1 w-[150px] text-sm" // Adjust width as needed
-      />
-      <label htmlFor="divisor">/</label>
-      <input
-        id="divisor"
-        type="number"
-        min="1"
-        max="1000"
-        value={divisor}
-        onChange={(e) => setDivisor(Math.max(1, parseInt(e.target.value, 10)))}
-        className="border border-gray-300 rounded px-2 py-1 w-[80px] text-sm" // Adjust width as needed
-      />
-      <button onClick={startAnimation} className="bg-black text-white px-2 py-1 rounded">Go</button>
+    <div className="mt-[-10px] flex flex-wrap items-center gap-2">
+      <div className="flex-grow max-w-[calc(100%-150px)]">
+        <input
+          id="dividend"
+          type="number"
+          inputMode="numeric"
+          pattern="[0-9]*"
+          min="1"
+          max="999999999999"
+          value={dividend}
+          onChange={(e) => {
+            const value = parseInt(e.target.value, 10);
+            if (!isNaN(value)) {
+              setDividend(Math.max(1, Math.min(value, 999999999999)));
+            }
+          }}
+          onFocus={(e) => e.target.select()}
+          className="w-full border border-gray-300 rounded px-3 py-2 text-base"
+        />
       </div>
 
+      <div className="flex items-center gap-2">
+        <label htmlFor="divisor" className="text-xl font-bold">/</label>
+        <input
+          id="divisor"
+          type="number"
+          inputMode="numeric"
+          pattern="[0-9]*"
+          min="1"
+          max="999"
+          value={divisor}
+          onChange={(e) => {
+            const value = parseInt(e.target.value, 10);
+            if (!isNaN(value)) {
+              setDivisor(Math.max(1, Math.min(value, 999)));
+            }
+          }}
+          onFocus={(e) => e.target.select()}
+          className="w-[80px] border border-gray-300 rounded px-3 py-2 text-base"
+        />
+      </div>
+
+      <button 
+        onClick={startAnimation} 
+        className="bg-black text-white px-4 py-2 rounded hover:bg-gray-800 transition-colors"
+      >
+        Go
+      </button>
+    </div>
+    
 
     <div className="mt-2">
         <div>
