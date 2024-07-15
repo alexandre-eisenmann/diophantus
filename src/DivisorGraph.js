@@ -17,7 +17,7 @@ function getCurrentTimestamp() {
   return parseInt(`${minutes}${hour}${day}${month}${year}`, 10);
 }
 
-const DivisorGraph = () => {
+const DivisorGraph = ({id}) => {
   const [dividend, setDividend] = useState(getCurrentTimestamp());
   const [divisor, setDivisor] = useState(Math.floor(Math.random() * 60) + 1);
   const [arcs, setArcs] = useState([]);
@@ -106,7 +106,7 @@ const DivisorGraph = () => {
       <g ref={cursorRef} key={"cursor"} transform={`translate(-1000, -1000)`}>
         <circle r={8} fill="white" stroke="black" strokeWidth="0.5" />
         <text
-          id={'cursor-text'}
+          id={`cursor-text-${id}`}
           textAnchor="middle"
           dominantBaseline="central"
           fill="black"
@@ -225,7 +225,7 @@ const DivisorGraph = () => {
     if (cursorRef.current) {
       cursorRef.current.setAttribute("transform", `translate(${x}, ${y})`);
 
-      ['cursor-text', 'mod'].forEach((id) => {
+      [`cursor-text-${id}`, `mod-${id}`].forEach((id) => {
         const textElement = document.getElementById(id);
         if (textElement) {
           textElement.textContent = value.toString();
@@ -266,7 +266,7 @@ const DivisorGraph = () => {
   return (
     <div className="mt-1 flex flex-col items-center ">
       <div className = "font-roboto-condensed font-bold text-2xl">
-        <div>{dividend} mod {divisor} = <span id="mod"></span></div>
+        <div>{dividend} mod {divisor} = <span id={`mod-${id}`}></span></div>
       </div>
 
       <svg className="mt-[-15px]"  width={radius * 2 + dotRadius * 2 + 60 } height={radius * 2 + dotRadius * 2 + 60}>
@@ -350,7 +350,7 @@ const DivisorGraph = () => {
         Go
       </button>
     </div>
-    
+
 
     <div className="mt-2">
         <div>
