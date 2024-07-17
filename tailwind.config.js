@@ -6,7 +6,7 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        'roboto-condensed': ['Roboto Condensed', 'sans-serif'],
+        'roboto-mono': ["Roboto Mono", "monospace"],
       },
       fontWeight: {
         'thin': 300,

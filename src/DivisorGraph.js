@@ -26,13 +26,13 @@ const DivisorGraph = ({id}) => {
   const [tick, setTick] = useState(200)
   const [speed, setSpeed] = useState(80)
   const cursorRef = useRef(null); // Using useRef for cursor position
-  // const radius = 160;
   const radius = 140;
   const dotRadius = 4;
 
   useEffect(() => {
-    updateCursor()
-  }, [paths, divisor, dividend]);
+    updateDisplay()
+    clearDividendUpTo(dividend.toString().length+1)
+  }, [paths, divisor, dividend, speed]);
 
 
 
@@ -59,6 +59,7 @@ const DivisorGraph = ({id}) => {
 
 
   const startAnimation = () => {
+    
     const newPaths = [];
     let start = 0;
     const numberString = dividend.toString();
@@ -73,7 +74,7 @@ const DivisorGraph = ({id}) => {
         let target = start;
         if (p !== null) {
           newPaths.push({
-            data: { type: "circle", source, target, ref: digit - j -1 },
+            data: { type: "circle", source, target, ref: digit - j -1, pos: i },
             path: p,
             duration: tick,
             begin: newPaths.reduce((acc, path) => acc + path.duration, 0)
@@ -89,7 +90,7 @@ const DivisorGraph = ({id}) => {
       let target = end;
       if (p !== null) {
         newPaths.push({
-          data: { type: "shortcut", source, target, ref: target },
+          data: { type: "shortcut", source, target, ref: target, pos: i },
           path: p,
           duration: tick,
           begin: newPaths.reduce((acc, path) => acc + path.duration, 0)
@@ -143,7 +144,7 @@ const DivisorGraph = ({id}) => {
               dominantBaseline="middle"
               fill="#999"
               fontSize={8}
-              fontFamily="Roboto, sans-serif"
+              fontFamily="Roboto, monospace"
               fontWeight="300"
             >
               {i}
@@ -221,28 +222,59 @@ const DivisorGraph = ({id}) => {
     return `M ${startX} ${startY} A ${gRadius} ${gRadius} 0 0 ${sweepFlag} ${endX} ${endY}`;
   };
 
-  const updateCursor = (x = -1000, y = -1000, value = "") => {
+
+  const updateDisplay = (x = -1000, y = -1000, value = "") => {
     if (cursorRef.current) {
       cursorRef.current.setAttribute("transform", `translate(${x}, ${y})`);
-
       [`cursor-text-${id}`, `mod-${id}`].forEach((id) => {
         const textElement = document.getElementById(id);
         if (textElement) {
           textElement.textContent = value.toString();
         }
-
       })
     }
   }
 
-  const handleMilestone = ({ type, source, target, ref, event }) => {
+  const clearDividendUpTo = (pos) => {
+    for (let i = 0; i <= pos; i++) {
+      const textElement = document.getElementById(`digit-${id}-${i}`);
+      if (textElement) {
+        textElement.style.color = "white";
+      }
+    }
+  };
+  
+  const updateDividend = (ref = null, pos = null) => {
+    if (cursorRef.current) {
+      if (pos>=0 ) {
+        const textElement = document.getElementById(`digit-${id}-${pos}`);
+        if (textElement) {
+            textElement.textContent = ref;
+            textElement.style.color = "rgba(0,0,0,0.5)";
+        }
+      }
+    }
+  }
+
+  const handleMilestone = ({ type, source, target, ref, pos, event }) => {
+    if (event === "start") {
+      if (type === "circle") {
+        updateDividend(ref + 1 , pos)
+      } else {
+        updateDividend("*", pos) 
+      }
+      clearDividendUpTo(parseInt(pos)-1)
+    }
     if (event === "end" ) {
-      //  console.log(`${type}: ${source} -> ${target} -> ${ref}`); 
       const angle = (Math.PI / 2) - (target / divisor) * 2 * Math.PI;
       const x = (radius + 12) * Math.cos(angle);
       const y = -(radius + 12) * Math.sin(angle);
-      updateCursor(x, y, target)
-    }      
+      updateDisplay(x, y, target)
+      if (pos === dividend.toString().length-1 && ref==0  ) {
+        clearDividendUpTo(parseInt(pos))
+      }
+    }
+    
   };
 
   const drawArcLine = (index, start, end, color = "blue") => {
@@ -265,8 +297,19 @@ const DivisorGraph = ({id}) => {
 
   return (
     <div className="mt-1 flex flex-col items-center ">
-      <div className = "font-roboto-condensed font-bold text-2xl">
-        <div>{dividend} mod {divisor} = <span id={`mod-${id}`}></span></div>
+      <div className="font-roboto-mono font-bold text-xl w-full">
+          <div className="ml-10 text-left">
+            {dividend} mod {divisor} = <span id={`mod-${id}`} className="inline-block w-16"></span>
+          </div>
+          <div className="mt-[-10px] mb-[-10px]">
+          <div className="ml-10 text-left">
+            {dividend.toString().split('').map((digit, index) => (
+              <span className="text-white" id={`digit-${id}-${index}`}  key={`digit-${id}-${index}`} >
+                {digit}
+              </span>
+            ))}
+          </div>
+          </div>
       </div>
 
       <svg className="mt-[-15px]"  width={radius * 2 + dotRadius * 2 + 60 } height={radius * 2 + dotRadius * 2 + 60}>

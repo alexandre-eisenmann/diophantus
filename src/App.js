@@ -5,8 +5,8 @@ function App() {
   return (
     <div className="flex space-x-4">
       <DivisorGraph id="1"/>
-      <DivisorGraph id="2"/>
-      <DivisorGraph id="3"/>
+      {/* <DivisorGraph id="2"/>
+      <DivisorGraph id="3"/> */}
     </div>
   );
 }
