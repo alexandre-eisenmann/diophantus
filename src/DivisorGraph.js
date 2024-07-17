@@ -250,7 +250,7 @@ const DivisorGraph = ({id}) => {
         const textElement = document.getElementById(`digit-${id}-${pos}`);
         if (textElement) {
             textElement.textContent = ref;
-            textElement.style.color = "rgba(0,0,0,0.5)";
+            textElement.style.color = "rgba(0,0,0,0.2)";
         }
       }
     }
@@ -270,8 +270,8 @@ const DivisorGraph = ({id}) => {
       const x = (radius + 12) * Math.cos(angle);
       const y = -(radius + 12) * Math.sin(angle);
       updateDisplay(x, y, target)
-      if (pos === dividend.toString().length-1 && ref==0  ) {
-        clearDividendUpTo(parseInt(pos))
+      if (pos === dividend.toString().length-1 && ref===0  ) {
+        clearDividendUpTo(parseInt(pos)+100)
       }
     }
     
@@ -301,7 +301,7 @@ const DivisorGraph = ({id}) => {
           <div className="ml-10 text-left">
             {dividend} mod {divisor} = <span id={`mod-${id}`} className="inline-block w-16"></span>
           </div>
-          <div className="mt-[-10px] mb-[-10px]">
+          <div className="mt-[-10px] mb-[-15px]">
           <div className="ml-10 text-left">
             {dividend.toString().split('').map((digit, index) => (
               <span className="text-white" id={`digit-${id}-${index}`}  key={`digit-${id}-${index}`} >
