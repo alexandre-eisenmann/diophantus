@@ -287,7 +287,7 @@ const DivisorGraph = ({id}) => {
         id={`path-${index}`}
         d={arcPath}
         fill="none"
-        stroke={color}
+        stroke={color}]/[.p,0m9jn8bh7gv6fc5r4xewzQ]
         strokeWidth="0.2"
         markerEnd="url(#arrowhead)"
         strokeLinecap="round"
